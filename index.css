@@ -1,3 +1,8 @@
 #nav{
      justify-content: center;
 }
+#nav.jobb{
+     float:right
+     display: flex;
+     justify-content: flex-end;
+}
