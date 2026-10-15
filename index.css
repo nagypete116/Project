@@ -4,3 +4,10 @@
 #carousel{
      width: 300px;
 }
+.grid-container {
+  display: grid;
+  grid-template-columns: repeat(3, 100px);
+  grid-template-rows: repeat(3, 100px);
+  height: 500px;
+  place-content: center;
+}
