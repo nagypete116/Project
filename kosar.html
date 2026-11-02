@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Philter – Kosár</title>
+<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+
+<header>
+  <div class="wrap topbar">
+    <a href="index.html" class="logo">PHILTER</a>
+    <form class="search" onsubmit="event.preventDefault(); location.href='index.html';">
+      <input type="text" placeholder="Mit keresel?">
+      <button type="submit"><i class="fa-solid fa-magnifying-glass"></i></button>
+    </form>
+    <nav class="mainnav">
+      <a href="index.html">Főoldal</a>
+      <a href="kedvencek.html">Kedvencek <span class="badge" id="favCount">0</span></a>
+      <a href="kosar.html" class="active">Kosár <span class="badge" id="cartCount">0</span></a>
+    </nav>
+  </div>
+</header>
+
+<main>
+  <div class="wrap">
+    <h2 style="margin-top:0;">Kosár</h2>
+    <div id="content"></div>
+  </div>
+</main>
+
+<footer>
+  <div class="wrap">
+    <span>© 2026 Philter</span>
+  </div>
+</footer>
+
+<script src="app.js"></script>
+<script>
+function shippingFee() {
+  const el = document.querySelector('input[name="ship"]:checked');
+  return el ? parseInt(el.value) : 0;
+}
+
+function updateTotals() {
+  const cart = getCart();
+  const subtotal = cart.reduce((s, id) => {
+    const p = findProduct(id);
+    return s + (p ? p.price : 0);
+  }, 0);
+  const ship = shippingFee();
+  document.getElementById('subtotal').textContent = formatPrice(subtotal);
+  document.getElementById('ship').textContent = formatPrice(ship);
+  document.getElementById('total').textContent = formatPrice(subtotal + ship);
+}
+
+function removeItem(id) {
+  removeFromCart(id);
+  render();
+}
+
+function checkout(e) {
+  e.preventDefault();
+  saveCart([]);
+  updateBadges();
+  document.getElementById('content').innerHTML =
+    '<div class="empty"><h3>Köszönjük a megrendelést!</h3><p>Az adatokat elküldtük e-mailben.</p><a href="index.html" class="btn">Vissza a főoldalra</a></div>';
+}
+
+function render() {
+  const box = document.getElementById('content');
+  const cart = getCart();
+  const list = cart.map(id => findProduct(id)).filter(Boolean);
+
+  if (!list.length) {
+    box.innerHTML = '<div class="empty"><h3>A kosár üres</h3><p>Böngéssz a hirdetések között és adj hozzá termékeket.</p><a href="index.html" class="btn">Böngészés</a></div>';
+    return;
+  }
+
+  const itemsHtml = list.map(p => `
+    <li>
+      <div style="display:flex;align-items:center;gap:12px;flex:1;min-width:0;">
+        <img class="thumb" src="${p.image}" alt="">
+        <div style="min-width:0;">
+          <div style="font-weight:600;color:#e1e3e8;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${p.title}</div>
+          <div style="font-size:0.75rem;color:#8a91a3;">Eladó: ${p.seller}</div>
+        </div>
+      </div>
+      <div style="display:flex;align-items:center;gap:12px;">
+        <span style="color:#22c55e;font-weight:700;">${formatPrice(p.price)}</span>
+        <button class="iconbtn" onclick="removeItem(${p.id})"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+    </li>
+  `).join('');
+
+  box.innerHTML = `
+    <div class="layout" style="grid-template-columns:1fr 320px;">
+      <div>
+        <div class="panel">
+          <h2>Kiválasztott termékek</h2>
+          <ul class="cart-list">${itemsHtml}</ul>
+        </div>
+
+        <div class="panel" style="margin-top:16px;">
+          <h2>Szállítási mód</h2>
+          <div class="field">
+            <label>
+              <input type="radio" name="ship" value="1190" checked onchange="updateTotals()">
+              Foxpost csomagautomata – 1 190 Ft
+            </label>
+          </div>
+          <div class="field">
+            <label>
+              <input type="radio" name="ship" value="1990" onchange="updateTotals()">
+              GLS házhozszállítás – 1 990 Ft
+            </label>
+          </div>
+          <div class="field">
+            <label>
+              <input type="radio" name="ship" value="0" onchange="updateTotals()">
+              Személyes átvétel – 0 Ft
+            </label>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <div class="panel">
+          <h2>Összegzés</h2>
+          <div class="summary-row"><span>Termékek:</span><span id="subtotal">0 Ft</span></div>
+          <div class="summary-row"><span>Szállítás:</span><span id="ship">0 Ft</span></div>
+          <div class="summary-row total"><span>Végösszeg:</span><span id="total">0 Ft</span></div>
+
+          <form onsubmit="checkout(event)" style="margin-top:16px;display:flex;flex-direction:column;gap:8px;">
+            <input type="text" placeholder="Név" required>
+            <input type="email" placeholder="E-mail" required>
+            <input type="tel" placeholder="Telefonszám" required>
+            <textarea rows="2" placeholder="Szállítási cím" required></textarea>
+            <button type="submit" class="btn" style="width:100%;margin-top:4px;">
+              <i class="fa-solid fa-check"></i> Megrendelés
+            </button>
+          </form>
+        </div>
+      </div>
+    </div>
+  `;
+
+  updateTotals();
+}
+
+render();
+</script>
+</body>
+</html>

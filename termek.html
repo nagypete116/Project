@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Philter – Termék</title>
+<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+
+<header>
+  <div class="wrap topbar">
+    <a href="index.html" class="logo">PHILTER</a>
+    <form class="search" onsubmit="event.preventDefault(); location.href='index.html';">
+      <input type="text" placeholder="Mit keresel?">
+      <button type="submit"><i class="fa-solid fa-magnifying-glass"></i></button>
+    </form>
+    <nav class="mainnav">
+      <a href="index.html">Főoldal</a>
+      <a href="kedvencek.html">Kedvencek <span class="badge" id="favCount">0</span></a>
+      <a href="kosar.html">Kosár <span class="badge" id="cartCount">0</span></a>
+    </nav>
+  </div>
+</header>
+
+<main>
+  <div class="wrap">
+    <div id="content"></div>
+  </div>
+</main>
+
+<footer>
+  <div class="wrap">
+    <span>© 2026 Philter</span>
+  </div>
+</footer>
+
+<script src="app.js"></script>
+<script>
+const id = parseInt(new URLSearchParams(location.search).get('id'));
+const product = findProduct(id);
+const box = document.getElementById('content');
+
+function render() {
+  if (!product) {
+    box.innerHTML = '<div class="empty"><h3>A termék nem található</h3><a href="index.html" class="btn">Vissza a főoldalra</a></div>';
+    return;
+  }
+  const fav = getFavs().includes(product.id);
+  box.innerHTML = `
+    <div class="product-layout">
+      <div class="panel">
+        <img src="${product.image}" alt="" style="width:100%;border-radius:8px;">
+      </div>
+      <div class="panel">
+        <h1 style="font-size:1.3rem;margin:0 0 10px;">${product.title}</h1>
+        <div style="color:#22c55e;font-size:1.6rem;font-weight:700;margin-bottom:14px;">
+          ${formatPrice(product.price)}
+        </div>
+        <div style="margin-bottom:16px;color:#a0a7b8;font-size:0.85rem;">
+          <i class="fa-solid fa-location-dot"></i> ${product.location} ·
+          ${product.condition} ·
+          ${product.shipping ? 'Postázható' : 'Csak személyes átvétel'}
+        </div>
+        <div style="margin-bottom:16px;font-size:0.85rem;color:#a0a7b8;">
+          Eladó: <strong style="color:#e1e3e8;">${product.seller}</strong> (+${product.sellerRating})
+        </div>
+        <div style="display:flex;gap:8px;">
+          <button class="btn" style="flex:1" onclick="addToCart(${product.id});location.href='kosar.html';">
+            <i class="fa-solid fa-cart-plus"></i> Kosárba
+          </button>
+          <button class="iconbtn ${fav?'active':''}" style="width:42px;height:42px;" onclick="handleFav(this)">
+            <i class="fa-solid fa-heart"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+    <div class="panel" style="margin-top:20px;">
+      <h2>Leírás</h2>
+      <p style="color:#a0a7b8;white-space:pre-line;">${product.description}</p>
+    </div>
+  `;
+}
+
+function handleFav(btn) {
+  toggleFav(product.id);
+  btn.classList.toggle('active');
+}
+
+render();
+</script>
+</body>
+</html>
