@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Philter – Kedvencek</title>
+<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+
+<header>
+  <div class="wrap topbar">
+    <a href="index.html" class="logo">PHILTER</a>
+    <form class="search" onsubmit="event.preventDefault(); location.href='index.html';">
+      <input type="text" placeholder="Mit keresel?">
+      <button type="submit"><i class="fa-solid fa-magnifying-glass"></i></button>
+    </form>
+    <nav class="mainnav">
+      <a href="index.html">Főoldal</a>
+      <a href="kedvencek.html" class="active">Kedvencek <span class="badge" id="favCount">0</span></a>
+      <a href="kosar.html">Kosár <span class="badge" id="cartCount">0</span></a>
+    </nav>
+  </div>
+</header>
+
+<main>
+  <div class="wrap">
+    <h2 style="margin-top:0;">Kedvencek</h2>
+    <div id="content"></div>
+  </div>
+</main>
+
+<footer>
+  <div class="wrap">
+    <span>© 2026 Philter</span>
+  </div>
+</footer>
+
+<script src="app.js"></script>
+<script>
+function render() {
+  const favs = getFavs();
+  const box = document.getElementById('content');
+  const list = favs.map(id => findProduct(id)).filter(Boolean);
+
+  if (!list.length) {
+    box.className = '';
+    box.innerHTML = '<div class="empty"><h3>Még nincs kedvenced</h3><p>Kattints a szív ikonra a hirdetéseknél.</p><a href="index.html" class="btn">Böngészés</a></div>';
+    return;
+  }
+
+  box.className = 'grid';
+  box.innerHTML = list.map(p => `
+    <div class="card">
+      <a href="termek.html?id=${p.id}"><img src="${p.image}" alt=""></a>
+      <div class="body">
+        <h3><a href="termek.html?id=${p.id}">${p.title}</a></h3>
+        <div class="meta">${p.location} · ${p.condition}</div>
+        <div class="price">${formatPrice(p.price)}</div>
+        <div class="foot">
+          <span>${p.seller} (+${p.sellerRating})</span>
+          <div class="actions">
+            <button class="iconbtn active" onclick="handleFav(${p.id})"><i class="fa-solid fa-heart"></i></button>
+            <button class="iconbtn" onclick="handleCart(${p.id})"><i class="fa-solid fa-cart-plus"></i></button>
+          </div>
+        </div>
+      </div>
+    </div>
+  `).join('');
+}
+
+function handleFav(id) {
+  toggleFav(id);
+  render();
+}
+
+function handleCart(id) {
+  addToCart(id);
+  location.href = 'kosar.html';
+}
+
+render();
+</script>
+</body>
+</html>

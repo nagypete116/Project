@@ -1,113 +1,235 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="hu">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Philter</title>
-    <link rel="stylesheet" href="index.css">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Philter – Apróhirdetések</title>
+<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
-<nav class="navbar navbar-expand-lg bg-body-tertiary">
-  <div class="container-fluid">
-    <a class="navbar-brand" href="#">Philter</a>
-    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-      <span class="navbar-toggler-icon"></span>
-    </button>
-    <div class="collapse navbar-collapse" id="navbarSupportedContent">
-      <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-        <li class="nav-item">
-          <a class="nav-link active" aria-current="page" href="#">Home</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" href="#">Link</a>
-        </li>
-        <li class="nav-item dropdown">
-          <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-            
-          </a>
-          <ul class="dropdown-menu">
-            <li><a class="dropdown-item" href="#">Action</a></li>
-            <li><a class="dropdown-item" href="#">Another action</a></li>
-            <li><hr class="dropdown-divider"></li>
-            <li><a class="dropdown-item" href="#">Something else here</a></li>
-          </ul>
-        </li>
-      </ul>
-      <form class="d-flex ms-auto" role="search">
-        <input class="form-control me-2" type="search" placeholder="Keresés" aria-label="Keresés"/>
-        <button class="btn btn-outline-success" type="submit">Keresés</button>
-      </form>
-    </div>
+
+<header>
+  <div class="wrap topbar">
+    <a href="index.html" class="logo">PHILTER</a>
+    <form class="search" onsubmit="event.preventDefault(); doSearch();">
+      <input type="text" id="headerSearch" placeholder="Mit keresel?">
+      <button type="submit"><i class="fa-solid fa-magnifying-glass"></i></button>
+    </form>
+    <nav class="mainnav">
+      <a href="index.html" class="active">Főoldal</a>
+      <a href="kedvencek.html">Kedvencek <span class="badge" id="favCount">0</span></a>
+      <a href="kosar.html">Kosár <span class="badge" id="cartCount">0</span></a>
+    </nav>
   </div>
-</nav>
-<div>
-  
+</header>
+
+<div class="catbar">
+  <div class="wrap" id="catbar"></div>
 </div>
-<div class="container my-4">
-  <div id="carouselExampleAutoplaying" class="carousel slide" data-bs-ride="carousel">
-    <div class="carousel-inner">
-      <div class="carousel-item active">
-        <img src="stock-photo--fluid-wave-tone-gradient-background-with-stylish-extra-grain-in-obsidian-navy-electric-2845378617.jpg" class="d-block w-100" alt="...">
+
+<main>
+  <div class="wrap layout">
+
+    <aside class="panel">
+      <h2>Szűrők</h2>
+
+      <div class="field">
+        <label>Keresőszó</label>
+        <input type="text" id="fKeyword" oninput="render()">
       </div>
-      <div class="carousel-item">
-        <img src="stock-photo--fluid-wave-tone-gradient-background-with-stylish-extra-grain-in-obsidian-navy-electric-2845378617.jpg" class="d-block w-100" alt="...">
+
+      <div class="field">
+        <label>Város</label>
+        <select id="fLocation" onchange="render()">
+          <option value="all">Egész ország</option>
+          <option>Budapest</option>
+          <option>Debrecen</option>
+          <option>Szeged</option>
+          <option>Miskolc</option>
+          <option>Pécs</option>
+          <option>Győr</option>
+        </select>
       </div>
-      <div class="carousel-item">
-        <img src="stock-photo--fluid-wave-tone-gradient-background-with-stylish-extra-grain-in-obsidian-navy-electric-2845378617.jpg" class="d-block w-100" alt="...">
+
+      <div class="field">
+        <label>Ár (Ft)</label>
+        <div class="row2">
+          <input type="number" id="fMin" placeholder="Min" oninput="render()">
+          <input type="number" id="fMax" placeholder="Max" oninput="render()">
+        </div>
       </div>
-    </div>
-    <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleAutoplaying" data-bs-slide="prev">
-      <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-      <span class="visually-hidden">Previous</span>
-    </button>
-    <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleAutoplaying" data-bs-slide="next">
-      <span class="carousel-control-next-icon" aria-hidden="true"></span>
-      <span class="visually-hidden">Next</span>
-    </button>
+
+      <div class="field">
+        <label>Állapot</label>
+        <select id="fCondition" onchange="render()">
+          <option value="all">Mindegy</option>
+          <option>Új</option>
+          <option>Újszerű</option>
+          <option>Használt</option>
+        </select>
+      </div>
+
+      <div class="field">
+        <label><input type="checkbox" id="fShipping" onchange="render()"> Csak postázható</label>
+      </div>
+
+      <button class="btn ghost" style="width:100%" onclick="resetFilters()">Szűrők törlése</button>
+    </aside>
+
+    <section>
+      <div class="toolbar">
+        <span>Találat: <strong id="resultCount">0</strong> db</span>
+        <div style="display:flex;gap:8px;align-items:center;">
+          <select id="sortBy" onchange="render()">
+            <option value="newest">Legújabb</option>
+            <option value="price-asc">Ár növekvő</option>
+            <option value="price-desc">Ár csökkenő</option>
+            <option value="rating">Legjobb eladó</option>
+          </select>
+          <button class="iconbtn active" id="viewGrid" onclick="setView('grid')"><i class="fa-solid fa-table-cells"></i></button>
+          <button class="iconbtn" id="viewList" onclick="setView('list')"><i class="fa-solid fa-list"></i></button>
+        </div>
+      </div>
+
+      <div id="listings" class="grid"></div>
+    </section>
+
   </div>
-</div>
-<container>
-<div class="row">
-  <div class="col">
-      1 of 3
+</main>
+
+<footer>
+  <div class="wrap">
+    <span>© 2026 Philter</span>
   </div>
-  <div class="col-2 text-center">
-    <div class="card">
-    mélyen alszikanyár
-    <img src="drotváz.png" alt="">
-    </div>
-  </div>
-  <div class="col-2 text-center">
-    <div class="card">
-    mélyen alszikanyár
-    </div>
-  </div>
-  <div class="col-2 text-center">
-    <div class="card">
-    mélyen alszikanyár
-    </div>
-  </div>
-  <div class="col-2 text-center">
-    <div class="card">
-    mélyen alszikanyár
-    </div>
-  </div>
-  <div class="col-2 text-center">
-    <div class="card">
-    mélyen alszikanyár
-    </div>
-  </div>
-  <div class="col-2 text-center">
-    <div class="card">
-    mélyen alszikanyár
-    </div>
-  </div>
-<div class="col">
-      3 of 3
-</div>
-</div>
-</container>
+</footer>
+
+<script src="app.js"></script>
+<script>
+let activeCategory = 'all';
+let viewMode = 'grid';
+
+function buildCatbar() {
+  const wrap = document.getElementById('catbar');
+  wrap.innerHTML = '';
+  CATEGORIES.forEach(c => {
+    const el = document.createElement('button');
+    el.className = 'cat' + (c.id === activeCategory ? ' active' : '');
+    el.textContent = c.label;
+    el.onclick = () => { activeCategory = c.id; buildCatbar(); render(); };
+    wrap.appendChild(el);
+  });
+}
+
+function setView(mode) {
+  viewMode = mode;
+  document.getElementById('viewGrid').classList.toggle('active', mode === 'grid');
+  document.getElementById('viewList').classList.toggle('active', mode === 'list');
+  render();
+}
+
+function doSearch() {
+  document.getElementById('fKeyword').value = document.getElementById('headerSearch').value;
+  render();
+}
+
+function resetFilters() {
+  document.getElementById('fKeyword').value = '';
+  document.getElementById('headerSearch').value = '';
+  document.getElementById('fLocation').value = 'all';
+  document.getElementById('fMin').value = '';
+  document.getElementById('fMax').value = '';
+  document.getElementById('fCondition').value = 'all';
+  document.getElementById('fShipping').checked = false;
+  activeCategory = 'all';
+  buildCatbar();
+  render();
+}
+
+function render() {
+  const keyword = document.getElementById('fKeyword').value.toLowerCase().trim();
+  const location = document.getElementById('fLocation').value;
+  const min = parseInt(document.getElementById('fMin').value) || 0;
+  const max = parseInt(document.getElementById('fMax').value) || Infinity;
+  const condition = document.getElementById('fCondition').value;
+  const shippingOnly = document.getElementById('fShipping').checked;
+  const sortBy = document.getElementById('sortBy').value;
+
+  let list = getProducts().filter(p => {
+    if (activeCategory !== 'all' && p.category !== activeCategory) return false;
+    if (keyword && !p.title.toLowerCase().includes(keyword) && !p.description.toLowerCase().includes(keyword)) return false;
+    if (location !== 'all' && p.location !== location) return false;
+    if (p.price < min || p.price > max) return false;
+    if (condition !== 'all' && p.condition !== condition) return false;
+    if (shippingOnly && !p.shipping) return false;
+    return true;
+  });
+
+  if (sortBy === 'price-asc') list.sort((a,b) => a.price - b.price);
+  else if (sortBy === 'price-desc') list.sort((a,b) => b.price - a.price);
+  else if (sortBy === 'rating') list.sort((a,b) => b.sellerRating - a.sellerRating);
+  else list.sort((a,b) => b.id - a.id);
+
+  document.getElementById('resultCount').textContent = list.length;
+  const box = document.getElementById('listings');
+  const favs = getFavs();
+
+  if (!list.length) {
+    box.className = '';
+    box.innerHTML = '<div class="empty"><h3>Nincs találat</h3><p>Próbálj más szűrőket.</p></div>';
+    return;
+  }
+
+  box.className = viewMode === 'grid' ? 'grid' : '';
+
+  box.innerHTML = list.map(p => {
+    const fav = favs.includes(p.id);
+    if (viewMode === 'grid') {
+      return `
+        <div class="card">
+          <a href="termek.html?id=${p.id}"><img src="${p.image}" alt=""></a>
+          <div class="body">
+            <h3><a href="termek.html?id=${p.id}">${p.title}</a></h3>
+            <div class="meta">${p.location} · ${p.condition}</div>
+            <div class="price">${formatPrice(p.price)}</div>
+            <div class="foot">
+              <span>${p.seller} (+${p.sellerRating})</span>
+              <div class="actions">
+                <button class="iconbtn ${fav?'active':''}" onclick="handleFav(${p.id}, this)"><i class="fa-solid fa-heart"></i></button>
+                <button class="iconbtn" onclick="handleCart(${p.id})"><i class="fa-solid fa-cart-plus"></i></button>
+              </div>
+            </div>
+          </div>
+        </div>`;
+    }
+    return `
+      <div class="list-item">
+        <a href="termek.html?id=${p.id}"><img src="${p.image}" alt=""></a>
+        <div class="info">
+          <h3><a href="termek.html?id=${p.id}">${p.title}</a></h3>
+          <div class="meta">${p.seller} (+${p.sellerRating}) · ${p.location} · ${p.condition}</div>
+        </div>
+        <div class="price">${formatPrice(p.price)}</div>
+        <div class="actions">
+          <button class="iconbtn ${fav?'active':''}" onclick="handleFav(${p.id}, this)"><i class="fa-solid fa-heart"></i></button>
+          <button class="iconbtn" onclick="handleCart(${p.id})"><i class="fa-solid fa-cart-plus"></i></button>
+        </div>
+      </div>`;
+  }).join('');
+}
+
+function handleFav(id, btn) {
+  toggleFav(id);
+  if (btn) btn.classList.toggle('active');
+}
+
+function handleCart(id) {
+  addToCart(id);
+  location.href = 'kosar.html';
+}
+
+buildCatbar();
+render();
+</script>
 </body>
 </html>
